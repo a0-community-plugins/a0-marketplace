@@ -71,10 +71,12 @@ def _full_clone(repo_url: str, target_dir: str, branch: str = "") -> dict:
     if os.path.exists(git_dir):
         shutil.rmtree(git_dir, ignore_errors=True)
 
-    # Validate plugin.json exists
-    if not os.path.exists(os.path.join(target_dir, "plugin.json")):
+    # Validate plugin.yaml (or legacy plugin.json) exists
+    has_yaml = os.path.exists(os.path.join(target_dir, "plugin.yaml"))
+    has_json = os.path.exists(os.path.join(target_dir, "plugin.json"))
+    if not has_yaml and not has_json:
         shutil.rmtree(target_dir, ignore_errors=True)
-        return {"ok": False, "error": "Cloned repo has no plugin.json at root."}
+        return {"ok": False, "error": "Cloned repo has no plugin.yaml at root."}
 
     return {"ok": True}
 
@@ -128,9 +130,11 @@ def _sparse_clone(repo_url: str, plugin_path: str, plugin_id: str, target_dir: s
         shutil.move(src, target_dir)
 
         # Validate
-        if not os.path.exists(os.path.join(target_dir, "plugin.json")):
+        has_yaml = os.path.exists(os.path.join(target_dir, "plugin.yaml"))
+        has_json = os.path.exists(os.path.join(target_dir, "plugin.json"))
+        if not has_yaml and not has_json:
             shutil.rmtree(target_dir, ignore_errors=True)
-            return {"ok": False, "error": "Plugin path has no plugin.json."}
+            return {"ok": False, "error": "Plugin path has no plugin.yaml."}
 
         return {"ok": True}
 
